@@ -20,7 +20,7 @@ void initDynArr(DynArr *v, int capacity)
 {
 	v->data = (TYPE *) malloc(sizeof(TYPE) * capacity);
 	assert(v->data != 0);
-	
+
 	v->size = 0;
 	v->capacity = capacity;
 }
@@ -31,7 +31,7 @@ void initDynArr(DynArr *v, int capacity)
 	pre:	none
 	post:	none
 	ret:	a non-null pointer to a dynArr of cap capacity
-			and 0 elements in it.		
+			and 0 elements in it.
 */
 DynArr* newDynArr(int cap)
 {
@@ -42,7 +42,7 @@ DynArr* newDynArr(int cap)
 	return r;
 }
 
-/* Deallocate data in dynamic array. 
+/* Deallocate data in dynamic array.
 
 	param: 	v		pointer to the dynamic array
 	pre:	none
@@ -61,7 +61,7 @@ void freeDynArr(DynArr *v)
 	v->capacity = 0;
 }
 
-/* Deallocate data array and the dynamic array structure. 
+/* Deallocate data array and the dynamic array structure.
 
 	param: 	v		pointer to the dynamic array
 	pre:	none
@@ -74,16 +74,25 @@ void deleteDynArr(DynArr *v)
 	free(v);
 }
 
-/* Resizes the underlying array to be the size cap 
+/* Resizes the underlying array to be the size cap
 
 	param: 	v		pointer to the dynamic array
 	param:	newCap		the new desired capacity
 	pre:	v is not null
 	post:	v has capacity newCap
 */
-void _dynArrSetCapacity(DynArr *v, int newCap)
+void _dynArrSetCapacity(DynArr *v, int newCap)/*FIXME*/
 {
-	/* FIXME: You will write this function */
+	assert(v != NULL);
+	DynArr* tmp = (DynArr*)malloc(newCap*sizeof(DynArr));
+	tmp->capacity = newCap;
+	tmp->size = v->size;
+	int i;
+	for (i = 0; i < v->size; i++) {
+		tmp->data[i] = v->data[i];
+	}
+	free(v);
+	v = tmp;
 }
 
 /* Get the size of the dynamic array
@@ -107,13 +116,18 @@ int sizeDynArr(DynArr *v)
 	post:	if reached capacity, capacity is doubled
 	post:	val is in the last utilized position in the array
 */
-void addDynArr(DynArr *v, TYPE val)
+void addDynArr(DynArr *v, TYPE val)/* FIXME: You will write this function */
 {
-	/* FIXME: You will write this function */
+	assert(v != NULL);
+	if (v->size-1 == v->capacity) {
+		_dynArrSetCapacity(v,v->capacity*2);
+	}
+	v->data[v->size] = val;
+	v->size++;
 }
 
 /*	Get an element from the dynamic array from a specified position
-	
+
 	param: 	v		pointer to the dynamic array
 	param:	pos		integer index to get the element from
 	pre:	v is not null
@@ -133,7 +147,7 @@ TYPE getDynArr(DynArr *v, int pos)
 
 	param: 	v		pointer to the dynamic array
 	param:	pos		the index to put the value into
-	param:	val		the value to insert 
+	param:	val		the value to insert
 	pre:	v is not null
 	pre:	v is not empty
 	pre:	pos >= 0 and pos < size of the array
@@ -177,16 +191,31 @@ void swapDynArr(DynArr *v, int i, int  j)
 	post:	the element at idx is removed
 	post:	the elements past idx are moved back one
 */
-void removeAtDynArr(DynArr *v, int idx)
+void removeAtDynArr(DynArr *v, int idx)/* FIXME: You will write this function */
 {
-	/* FIXME: You will write this function */
+	assert(v != NULL);
+	assert(v->size > 0);
+	assert(idx < v->size);
+	assert(idx >= 0);
+
+	v->data[idx] = 0;
+	v->size--;
+	int i;
+	for (i = 0; i < idx; i++) {
+		if (v->data[idx+1] != 0) {
+			v->data[idx] = v->data[idx+1];
+		}
+		else{
+			break;
+		}
+	}
 }
 
 /* ************************************************************************
 	Stack Interface Functions
 ************************************************************************ */
 
-/*	Returns boolean (encoded in an int) demonstrating whether or not the 
+/*	Returns boolean (encoded in an int) demonstrating whether or not the
 	dynamic array stack has an item on it.
 
 	param:	v		pointer to the dynamic array
@@ -208,13 +237,21 @@ int isEmptyDynArr(DynArr *v)
 			if reached capacity, capacity is doubled
 			val is on the top of the stack
 */
-void pushDynArr(DynArr *v, TYPE val)
+void pushDynArr(DynArr *v, TYPE val)/* FIXME: You will write this function */
 {
-	/* FIXME: You will write this function */
-
+	assert(v != NULL);
+	if (v->size+1 > v->capacity) {/**/
+		_dynArrSetCapacity(v,v->capacity*2);
+	}
+	int i;
+	for (i = v->size; i >= 0 ; i--) {
+		v->data[i+1] = v->data[i];
+	}
+	v->data[0] = val;
+	v->size++;
 }
 
-/*	Returns the element at the top of the stack 
+/*	Returns the element at the top of the stack
 
 	param:	v		pointer to the dynamic array
 	pre:	v is not null
@@ -224,10 +261,11 @@ void pushDynArr(DynArr *v, TYPE val)
 TYPE topDynArr(DynArr *v)
 {
 	assert((v!=NULL) && (sizeDynArr(v) > 0) );
-	return v->data[v->size-1];
+	return v->data[0];
+
 }
 
-/* Removes the element on top of the stack 
+/* Removes the element on top of the stack
 
 	param:	v		pointer to the dynamic array
 	pre:	v is not null
@@ -235,9 +273,14 @@ TYPE topDynArr(DynArr *v)
 	post:	size is decremented by 1
 			the top has been removed
 */
-void popDynArr(DynArr *v)
+void popDynArr(DynArr *v)/* FIXME: You will write this function */
 {
-	/* FIXME: You will write this function */
+	assert(v  != NULL);
+	int i;
+	for (i = 0; i < v->size; i++) {
+		v->data[i] = v->data[i+1];
+	}
+	v->size--;
 }
 
 /* ************************************************************************
@@ -254,9 +297,17 @@ void popDynArr(DynArr *v)
 	post:	no changes to the bag
         output: -1 if val was not found; o.w. the index of val in data
 */
-int containsDynArr(DynArr *v, TYPE val)
+int containsDynArr(DynArr *v, TYPE val)/* FIXME: You will write this function */
 {
-	/* FIXME: You will write this function */
+	assert(v != NULL);
+	assert(v->data != NULL);
+	int i;
+	for (i = 0; i < v->size; i++) {
+		if (v->data[i] == val) {
+			return(i);
+		}
+	}
+	return(-1);
 }
 
 /*	Removes the first occurrence of the specified value from the collection
@@ -269,7 +320,16 @@ int containsDynArr(DynArr *v, TYPE val)
 	post:	val has been removed
 	post:	size of the bag is reduced by 1
 */
-void removeDynArr(DynArr *v, TYPE val)
+void removeDynArr(DynArr *v, TYPE val)/* FIXME: You will write this function */
 {
-	/* FIXME: You will write this function */	
+	assert(v != NULL);
+	assert(v->data != NULL);
+	int i;
+	for (i = 0; i < v->size; i++) {
+		if (v->data[i] == val) {
+			removeAtDynArr(v,i);
+			v->size--;
+			return;
+		}
+	}
 }
