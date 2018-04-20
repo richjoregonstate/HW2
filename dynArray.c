@@ -198,17 +198,11 @@ void removeAtDynArr(DynArr *v, int idx)/* FIXME: You will write this function */
 	assert(idx < v->size);
 	assert(idx >= 0);
 
-	v->data[idx] = 0;
-	v->size--;
 	int i;
-	for (i = 0; i < idx; i++) {
-		if (v->data[idx+1] != 0) {
-			v->data[idx] = v->data[idx+1];
-		}
-		else{
-			break;
-		}
+	for (i = idx; i < v->size; i++) {
+		v->data[i] = v->data[i+1];
 	}
+	v->size--;
 }
 
 /* ************************************************************************
